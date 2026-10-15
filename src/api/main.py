@@ -37,6 +37,18 @@ def health():
         return {"status": "degraded", "error": str(e)}
 
 
+@app.get("/experiments")
+def list_experiments():
+    client = MlflowClient()
+    experiments = client.search_experiments()
+    return {
+        "experiments": [
+            {"id": e.experiment_id, "name": e.name, "artifact_location": e.artifact_location}
+            for e in experiments
+        ]
+    }
+
+
 @app.post("/models/register")
 def register_model(req: ModelRegisterRequest):
     client = MlflowClient()
@@ -86,3 +98,4 @@ def submit_train_job(req: TrainJobRequest):
         "gpu_count": req.gpu_count,
         "note": "Wire this to Kubernetes + KAI Scheduler in the next iteration",
     }
+    
